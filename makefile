@@ -12,10 +12,10 @@
 # Edited by Ian Feldman
 # April 2025
 
-MCU          = at90usb1287
+MCU          = atmega32u2
 ARCH         = AVR8
-BOARD        = USBKEY
-F_CPU        = 8000000
+BOARD        = NONE
+F_CPU        = 16000000
 F_USB        = $(F_CPU)
 OPTIMIZATION = s
 TARGET       = keyboard
@@ -34,14 +34,7 @@ include $(DMBS_LUFA_PATH)/lufa-gcc.mk
 
 # Include common DMBS build system modules
 DMBS_PATH      ?= $(LUFA_PATH)/Build/DMBS/DMBS
-include $(DMBS_PATH)/core.mk
-include $(DMBS_PATH)/cppcheck.mk
-include $(DMBS_PATH)/doxygen.mk
-include $(DMBS_PATH)/dfu.mk
 include $(DMBS_PATH)/gcc.mk
-include $(DMBS_PATH)/hid.mk
-include $(DMBS_PATH)/avrdude.mk
-include $(DMBS_PATH)/atprogram.mk
 
 # Flash keyboard
 flash: $(TARGET).hex
