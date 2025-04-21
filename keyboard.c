@@ -43,20 +43,20 @@ static uint8_t PrevKeyboardHIDReportBuffer[sizeof(USB_KeyboardReport_Data_t)];
  *  within a device can be differentiated from one another.
  */
 USB_ClassInfo_HID_Device_t Keyboard_HID_Interface =
-	{
-		.Config =
-			{
-				.InterfaceNumber              = INTERFACE_ID_Keyboard,
-				.ReportINEndpoint             =
-					{
-						.Address              = KEYBOARD_EPADDR,
-						.Size                 = KEYBOARD_EPSIZE,
-						.Banks                = 1,
-					},
-				.PrevReportINBuffer           = PrevKeyboardHIDReportBuffer,
-				.PrevReportINBufferSize       = sizeof(PrevKeyboardHIDReportBuffer),
-			},
-	};
+{
+    .Config =
+    {
+        .InterfaceNumber = INTERFACE_ID_Keyboard,
+        .ReportINEndpoint =
+        {
+            .Address = KEYBOARD_EPADDR,
+            .Size = KEYBOARD_EPSIZE,
+            .Banks = 1,
+        },
+        .PrevReportINBuffer = PrevKeyboardHIDReportBuffer,
+        .PrevReportINBufferSize = sizeof(PrevKeyboardHIDReportBuffer),
+    },
+};
 
 
 /** Main program entry point. This routine contains the overall program flow, including initial
@@ -64,29 +64,29 @@ USB_ClassInfo_HID_Device_t Keyboard_HID_Interface =
  */
 int main(void)
 {
-	SetupHardware();
+    SetupHardware();
 
-	GlobalInterruptEnable();
+    GlobalInterruptEnable();
 
-	for (;;)
-	{
-		HID_Device_USBTask(&Keyboard_HID_Interface);
-		USB_USBTask();
-	}
+    for (;;)
+    {
+        HID_Device_USBTask(&Keyboard_HID_Interface);
+        USB_USBTask();
+    }
 }
 
 /** Configures the board hardware and chip peripherals for the demo's functionality. */
 void SetupHardware()
 {
-	/* Disable watchdog if enabled by bootloader/fuses */
-	MCUSR &= ~(1 << WDRF);
-	wdt_disable();
+    /* Disable watchdog if enabled by bootloader/fuses */
+    MCUSR &= ~(1 << WDRF);
+    wdt_disable();
 
-	/* Disable clock division */
-	clock_prescale_set(clock_div_1);
+    /* Disable clock division */
+    clock_prescale_set(clock_div_1);
 
-	/* Hardware Initialization */
-	USB_Init();
+    /* Hardware Initialization */
+    USB_Init();
 }
 
 /** Event handler for the library USB Connection event. */
@@ -102,23 +102,23 @@ void EVENT_USB_Device_Disconnect(void)
 /** Event handler for the library USB Configuration Changed event. */
 void EVENT_USB_Device_ConfigurationChanged(void)
 {
-	bool ConfigSuccess = true;
+    bool ConfigSuccess = true;
 
-	ConfigSuccess &= HID_Device_ConfigureEndpoints(&Keyboard_HID_Interface);
+    ConfigSuccess &= HID_Device_ConfigureEndpoints(&Keyboard_HID_Interface);
 
-	USB_Device_EnableSOFEvents();
+    USB_Device_EnableSOFEvents();
 }
 
 /** Event handler for the library USB Control Request reception event. */
 void EVENT_USB_Device_ControlRequest(void)
 {
-	HID_Device_ProcessControlRequest(&Keyboard_HID_Interface);
+    HID_Device_ProcessControlRequest(&Keyboard_HID_Interface);
 }
 
 /** Event handler for the USB device Start Of Frame event. */
 void EVENT_USB_Device_StartOfFrame(void)
 {
-	HID_Device_MillisecondElapsed(&Keyboard_HID_Interface);
+    HID_Device_MillisecondElapsed(&Keyboard_HID_Interface);
 }
 
 /** HID class driver callback function for the creation of HID reports to the host.
@@ -132,16 +132,16 @@ void EVENT_USB_Device_StartOfFrame(void)
  *  \return Boolean \c true to force the sending of the report, \c false to let the library determine if it needs to be sent
  */
 bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo,
-                                         uint8_t* const ReportID,
-                                         const uint8_t ReportType,
-                                         void* ReportData,
-                                         uint16_t* const ReportSize)
+    uint8_t* const ReportID,
+    const uint8_t ReportType,
+    void* ReportData,
+    uint16_t* const ReportSize)
 {
         /*
-	USB_KeyboardReport_Data_t* KeyboardReport = (USB_KeyboardReport_Data_t*)ReportData;
+    USB_KeyboardReport_Data_t* KeyboardReport = (USB_KeyboardReport_Data_t*)ReportData;
         */
-	*ReportSize = sizeof(USB_KeyboardReport_Data_t);
-	return false;
+    *ReportSize = sizeof(USB_KeyboardReport_Data_t);
+    return false;
 }
 
 /** HID class driver callback function for the processing of HID reports from the host.
@@ -153,10 +153,10 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
  *  \param[in] ReportSize  Size in bytes of the received HID report
  */
 void CALLBACK_HID_Device_ProcessHIDReport(USB_ClassInfo_HID_Device_t* const HIDInterfaceInfo,
-                                          const uint8_t ReportID,
-                                          const uint8_t ReportType,
-                                          const void* ReportData,
-                                          const uint16_t ReportSize)
+    const uint8_t ReportID,
+    const uint8_t ReportType,
+    const void* ReportData,
+    const uint16_t ReportSize)
 {
 }
 
