@@ -64,6 +64,14 @@ USB_ClassInfo_HID_Device_t Keyboard_HID_Interface =
  */
 int main(void)
 {
+    /* test debug led */
+    DDRC |= (1 << PC7);
+    for (uint8_t i = 0; i < 10; i++)
+    {
+        PORTC ^= (1 << PC7);
+        _delay_ms(100);
+    }
+
     SetupHardware();
 
     GlobalInterruptEnable();

@@ -38,9 +38,9 @@ include $(DMBS_PATH)/gcc.mk
 
 # Flash keyboard
 flash: $(TARGET).hex
-	avrdude -c stk500v1 -P /dev/ttyACM0 -p m32u2 -b 19200 -U flash:w:$(TARGET).hex
+	avrdude -c avrisp -P /dev/ttyACM0 -p m32u2 -b 19200 -U flash:w:$(TARGET).hex -F
 
 # Program fuses
 fuses:
-	avrdude -c stk500v1 -p m32u2 -P /dev/ttyACM0 -b 19200 -U lfuse:w:0xFF:m -U hfuse:w:0xD7:m
+	avrdude -c avrisp -p m32u2 -P /dev/ttyACM0 -b 19200 -U lfuse:w:0xDE:m -U hfuse:w:0xD9:m -F
 
