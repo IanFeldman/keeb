@@ -28,6 +28,11 @@
   this software.
 */
 
+/*
+ * Edited by Ian Feldman
+ * April 2025
+ */
+
 /** \file
  *
  *  USB Device Descriptors, for library use when in USB device mode. Descriptors are special
@@ -36,6 +41,7 @@
  */
 
 #include "descriptors.h"
+#include "nkrohid.h"
 
 /** HID class report descriptor. This is a special descriptor constructed with values from the
  *  USBIF HID class specification to describe the reports and capabilities of the HID device. This
@@ -48,7 +54,10 @@ const USB_Descriptor_HIDReport_Datatype_t PROGMEM KeyboardReport[] =
     /* Use the HID class driver's standard Keyboard report.
      *   Max simultaneous keys: 6
      */
-    HID_DESCRIPTOR_KEYBOARD(6)
+    /* HID_DESCRIPTOR_KEYBOARD(6) */
+
+    /* Use custom 104 key report */
+    HID_DESCRIPTOR_NKRO_KEYBOARD
 };
 
 /** Device descriptor structure. This descriptor, located in FLASH memory, describes the overall

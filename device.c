@@ -1,6 +1,8 @@
 #include <avr/io.h>
+#include <LUFA/Drivers/USB/USB.h>
 #include <util/delay.h>
 #include "device.h"
+#include "nkrohid.h"
 
 /* Initialize device hardware */
 void device_init(void)
@@ -33,7 +35,7 @@ void device_blink(int count)
     }
 }
 
-/* Poll for keypresses, save to keys (array of length 17) */
+/* Poll for keypresses, save to keys (array of KEY_BUFFER_SIZE) */
 void device_poll(uint8_t *keys)
 {
     uint8_t idx = 0;
@@ -43,16 +45,16 @@ void device_poll(uint8_t *keys)
     uint8_t port_d = PIND;
 
     /* check modifiers first */
-    uint8_t mask;
     #ifdef LEFT
     /* port b */
-    if (port_b & (1 << 0)) keys[idx++] = HID_KEYBOARD_SC_X;
-    if (port_b & (1 << 1)) keys[idx++] = HID_KEYBOARD_SC_W;
-    if (port_b & (1 << 2)) keys[idx++] = HID_KEYBOARD_SC_Q;
+    if (!(port_b & (1 << 0))) keys[SC_TO_IDX(HID_KEYBOARD_SC_X)] |= SC_TO_MSK(HID_KEYBOARD_SC_X);
+    if (!(port_b & (1 << 1))) keys[SC_TO_IDX(HID_KEYBOARD_SC_W)] |= SC_TO_MSK(HID_KEYBOARD_SC_W);
+    if (!(port_b & (1 << 2))) keys[SC_TO_IDX(HID_KEYBOARD_SC_Q)] |= SC_TO_MSK(HID_KEYBOARD_SC_Q);
     /* port c */
     /* port d */
     #elif RIGHT
     #else
+    #error LEFT or RIGHT not defined
     #endif
 }
 

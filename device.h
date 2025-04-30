@@ -5,7 +5,7 @@
 
 void device_init(void);
 void device_blink(int count);
-void device_poll(uint8_t *keys, int count);
+void device_poll(uint8_t *keys);
 
 #endif /* DEVICE_H */
 

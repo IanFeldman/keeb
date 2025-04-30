@@ -1,8 +1,9 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "nkrohid.h"
 #include "uart.h"
 
-volatile uint8_t key_buffer_g[BUFFER_SIZE];
+volatile uint8_t key_buffer_g[KEY_BUFFER_SIZE];
 volatile int key_buffer_idx_g;
 
 /* Initialize uart peripheral */
@@ -51,7 +52,7 @@ ISR(USART1_RX_vect)
     if (UCSR1A & (1 << RXC1))
     {
         key_buffer_g[key_buffer_idx_g++] = UDR1;
-        if (key_buffer_idx_g == BUFFER_SIZE)
+        if (key_buffer_idx_g == KEY_BUFFER_SIZE)
         {
             key_buffer_idx_g = 0;
         }

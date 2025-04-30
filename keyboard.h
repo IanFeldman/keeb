@@ -28,19 +28,22 @@
   this software.
 */
 
-#ifndef _KEYBOARD_H_
-#define _KEYBOARD_H_
+/*
+ * Edited by Ian Feldman
+ * April 2025
+ */
+
+#ifndef KEYBOARD_H
+#define KEYBOARD_H
 
 #include <avr/io.h>
 #include <avr/wdt.h>
 #include <avr/power.h>
 #include <avr/interrupt.h>
+#include <LUFA/Drivers/USB/USB.h>
 #include <stdbool.h>
 #include <string.h>
-
 #include "descriptors.h"
-
-#include <LUFA/Drivers/USB/USB.h>
 
 void SetupHardware(void);
 void PeripheralTask(void);
