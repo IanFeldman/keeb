@@ -35,6 +35,8 @@
 
 #include "keyboard.h"
 
+int main_unit_g = 0;
+
 /** Buffer to hold the previously generated Keyboard HID report, for comparison purposes inside the HID class driver. */
 static uint8_t PrevKeyboardHIDReportBuffer[sizeof(USB_KeyboardReport_Data_t)];
 
@@ -64,14 +66,6 @@ USB_ClassInfo_HID_Device_t Keyboard_HID_Interface =
  */
 int main(void)
 {
-    /* test debug led */
-    DDRC |= (1 << PC7);
-    for (uint8_t i = 0; i < 10; i++)
-    {
-        PORTC ^= (1 << PC7);
-        _delay_ms(100);
-    }
-
     SetupHardware();
 
     GlobalInterruptEnable();
@@ -93,18 +87,28 @@ void SetupHardware()
     /* Disable clock division */
     clock_prescale_set(clock_div_1);
 
-    /* Hardware Initialization */
+    /* Flash debug led */
+    DDRC |= (1 << PC7);
+    for (uint8_t i = 0; i < 10; i++)
+    {
+        PORTC ^= (1 << PC7);
+        _delay_ms(100);
+    }
+
+    /* Hardware initialization */
     USB_Init();
 }
 
 /** Event handler for the library USB Connection event. */
 void EVENT_USB_Device_Connect(void)
 {
+    main_unit_g = 1;
 }
 
 /** Event handler for the library USB Disconnection event. */
 void EVENT_USB_Device_Disconnect(void)
 {
+    main_unit_g = 0;
 }
 
 /** Event handler for the library USB Configuration Changed event. */
