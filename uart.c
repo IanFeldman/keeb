@@ -1,10 +1,10 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "device.h"
 #include "nkrohid.h"
 #include "uart.h"
 
-volatile uint8_t key_buffer_g[KEY_BUFFER_SIZE];
-volatile int key_buffer_idx_g;
+volatile USB_NKRO_Report_Data_t report_g;
 
 /* Initialize uart peripheral */
 void uart_init(void)
@@ -20,42 +20,53 @@ void uart_init(void)
     UCSR1C = (3 << UCSZ10);
     /* enable global interrupts */
     SREG |= (1 << SREG_I);
-
-    /* initialize key buffer index */
-    key_buffer_idx_g = 0;
 }
 
 
-/* Send a key press to main unit */
-void uart_send_key(uint8_t key)
+/* Send a key press report to main unit */
+void uart_send_report(USB_NKRO_Report_Data_t report)
 {
-    /* wait for empty transmit buffer */
+    /* send modifier */
     while (!(UCSR1A & (1 << UDRE1)));
-    /* put data in buffer */
-    UDR1 = key;
+    UDR1 = report_g.Modifier;
+
+    /* send keys */
+    for (int i = 0; i < KEY_BUFFER_SIZE; i++)
+    {
+        /* wait for empty transmit buffer */
+        while (!(UCSR1A & (1 << UDRE1)));
+        /* put data in buffer */
+        UDR1 = report_g.Keys[i];
+    }
 }
 
 
-/* Getter for key buffer and size */
-uint8_t *get_buffer(int *size)
+/* Incorporate report buffer into live report */
+void uart_get_report(USB_NKRO_Report_Data_t *report)
 {
-    *size = key_buffer_idx_g;
-    key_buffer_idx_g = 0;
-    return (uint8_t *)key_buffer_g;
+    report->Modifier |= report_g.Modifier;
+    for (int i = 0; i < KEY_BUFFER_SIZE; i++)
+    {
+        report->Keys[i] |= report_g.Keys[i];
+    }
 }
 
 
-/* Receive a key press */
+/* Receive key state and save to global report buffer */
 ISR(USART1_RX_vect)
 {
-    /* check for data rx */
+    /* if data is available */
     if (UCSR1A & (1 << RXC1))
     {
-        key_buffer_g[key_buffer_idx_g++] = UDR1;
-        if (key_buffer_idx_g == KEY_BUFFER_SIZE)
-        {
-            key_buffer_idx_g = 0;
-        }
+        report_g.Modifier |= UDR1;
+    }
+
+    /* while data is available */
+    int i = 0;
+    while ((UCSR1A & (1 << RXC1)) && i < KEY_BUFFER_SIZE)
+    {
+        report_g.Keys[i] |= UDR1;
+        i++;
     }
 }
 

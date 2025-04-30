@@ -104,8 +104,17 @@ void PeripheralTask()
     /* skip if not peripheral */
     if (main_unit_g) return;
 
-    /* poll keyboard */
+    /* create usb report */
+    USB_NKRO_Report_Data_t KeyboardReport;
+
+    /* poll keys */
+    uint8_t input = device_poll(&KeyboardReport);
+
     /* send keypresses */
+    if (input)
+    {
+        uart_send_report(KeyboardReport);
+    }
 }
 
 /** Event handler for the library USB Connection event. */
@@ -167,9 +176,10 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
     USB_NKRO_Report_Data_t* KeyboardReport = (USB_NKRO_Report_Data_t*)ReportData;
 
     /* poll keys */
-    device_poll(KeyboardReport->Keys);
+    device_poll(KeyboardReport);
 
     /* add queued keys */
+    uart_get_report(KeyboardReport);
 
     *ReportSize = sizeof(USB_NKRO_Report_Data_t);
     return false;

@@ -35,26 +35,29 @@ void device_blink(int count)
     }
 }
 
-/* Poll for keypresses, save to keys (array of KEY_BUFFER_SIZE) */
-void device_poll(uint8_t *keys)
+/* Poll for keypresses, save to keys (array of KEY_BUFFER_SIZE).
+ * Return 1 if keys are pressed, 0 otherwise. */
+uint8_t device_poll(USB_NKRO_Report_Data_t *report)
 {
-    uint8_t idx = 0;
     /* read ports */
     uint8_t port_b = PINB;
     uint8_t port_c = PINC;
     uint8_t port_d = PIND;
+    uint8_t input = port_b | port_c | port_d;
 
     /* check modifiers first */
     #ifdef LEFT
     /* port b */
-    if (!(port_b & (1 << 0))) keys[SC_TO_IDX(HID_KEYBOARD_SC_X)] |= SC_TO_MSK(HID_KEYBOARD_SC_X);
-    if (!(port_b & (1 << 1))) keys[SC_TO_IDX(HID_KEYBOARD_SC_W)] |= SC_TO_MSK(HID_KEYBOARD_SC_W);
-    if (!(port_b & (1 << 2))) keys[SC_TO_IDX(HID_KEYBOARD_SC_Q)] |= SC_TO_MSK(HID_KEYBOARD_SC_Q);
+    if (!(port_b & (1 << 0))) report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_X)] |= SC_TO_MSK(HID_KEYBOARD_SC_X);
+    if (!(port_b & (1 << 1))) report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_W)] |= SC_TO_MSK(HID_KEYBOARD_SC_W);
+    if (!(port_b & (1 << 2))) report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_Q)] |= SC_TO_MSK(HID_KEYBOARD_SC_Q);
     /* port c */
     /* port d */
     #elif RIGHT
     #else
     #error LEFT or RIGHT not defined
     #endif
+
+    return !!input;
 }
 
