@@ -7,6 +7,9 @@
 /* Initialize device hardware */
 void device_init(void)
 {
+    /* insert delay to avoid pull up contention  */
+    _delay_ms(500);
+
     /* configure ports as inputs */
     DDRB = 0x00;
     DDRC = 0x00;
