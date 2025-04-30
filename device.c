@@ -39,14 +39,14 @@ void device_blink(int count)
 }
 
 /* Poll for keypresses, save to keys (array of KEY_BUFFER_SIZE).
- * Return 1 if keys are pressed, 0 otherwise. */
+ * Return a value if keys are pressed, 0 otherwise. */
 uint8_t device_poll(USB_NKRO_Report_Data_t *report)
 {
     /* read ports */
     uint8_t port_b = PINB;
     uint8_t port_c = PINC;
     uint8_t port_d = PIND;
-    uint8_t input = port_b | port_c | port_d;
+    uint8_t input = port_b & (port_c | ~PORTC_INPUT) & (port_d | ~PORTD_INPUT);
 
     /* check modifiers first */
     #ifdef LEFT
@@ -61,6 +61,6 @@ uint8_t device_poll(USB_NKRO_Report_Data_t *report)
     #error LEFT or RIGHT not defined
     #endif
 
-    return !!input;
+    return ~input;
 }
 

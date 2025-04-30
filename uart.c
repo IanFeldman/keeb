@@ -1,6 +1,5 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "device.h"
 #include "nkrohid.h"
 #include "uart.h"
 
