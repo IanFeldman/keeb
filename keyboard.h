@@ -43,6 +43,7 @@
 #include <LUFA/Drivers/USB/USB.h>
 
 void SetupHardware(void);
+void PeripheralTask(void);
 
 void EVENT_USB_Device_Connect(void);
 void EVENT_USB_Device_Disconnect(void);

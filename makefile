@@ -19,7 +19,7 @@ F_CPU        = 16000000
 F_USB        = $(F_CPU)
 OPTIMIZATION = s
 TARGET       = keyboard
-SRC          = $(TARGET).c descriptors.c uart.c $(LUFA_SRC_USB) $(LUFA_SRC_USBCLASS)
+SRC          = $(TARGET).c descriptors.c device.c uart.c $(LUFA_SRC_USB) $(LUFA_SRC_USBCLASS)
 LUFA_PATH    = third-party/LUFA
 CC_FLAGS     = -DUSE_LUFA_CONFIG_HEADER -Iconfig/
 

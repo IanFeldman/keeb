@@ -40,7 +40,7 @@ uint8_t *get_buffer(int *size)
 {
     *size = key_buffer_idx_g;
     key_buffer_idx_g = 0;
-    return key_buffer_g;
+    return (uint8_t *)key_buffer_g;
 }
 
 
@@ -49,6 +49,10 @@ ISR(USART1_RX_vect)
 {
     /* check for data rx */
     key_buffer_g[key_buffer_idx_g++] = UDR1;
+    if (key_buffer_idx_g == BUFFER_SIZE)
+    {
+        key_buffer_idx_g = 0;
+    }
 
     /*
     if (UCSR1A & (1 << RXC1))

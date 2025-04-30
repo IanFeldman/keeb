@@ -33,7 +33,9 @@
  * April 2025
  */
 
+#include "device.h"
 #include "keyboard.h"
+#include "uart.h"
 
 int main_unit_g = 0;
 
@@ -72,6 +74,7 @@ int main(void)
 
     for (;;)
     {
+        PeripheralTask();
         HID_Device_USBTask(&Keyboard_HID_Interface);
         USB_USBTask();
     }
@@ -87,28 +90,37 @@ void SetupHardware()
     /* Disable clock division */
     clock_prescale_set(clock_div_1);
 
-    /* Flash debug led */
-    DDRC |= (1 << PC7);
-    for (uint8_t i = 0; i < 10; i++)
-    {
-        PORTC ^= (1 << PC7);
-        _delay_ms(100);
-    }
-
     /* Hardware initialization */
+    device_init();
+    uart_init();
     USB_Init();
+
+    device_blink(1);
+}
+
+/** Peripheral main loop */
+void PeripheralTask()
+{
+    /* skip if not peripheral */
+    if (main_unit_g) return;
+
+    device_blink(1);
+    /* poll keyboard */
+    /* send keypresses */
 }
 
 /** Event handler for the library USB Connection event. */
 void EVENT_USB_Device_Connect(void)
 {
     main_unit_g = 1;
+    device_blink(2);
 }
 
 /** Event handler for the library USB Disconnection event. */
 void EVENT_USB_Device_Disconnect(void)
 {
     main_unit_g = 0;
+    device_blink(3);
 }
 
 /** Event handler for the library USB Configuration Changed event. */
@@ -149,6 +161,19 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
     void* ReportData,
     uint16_t* const ReportSize)
 {
+    /* skip if peripheral */
+    if (!main_unit_g) return false;
+
+    /* poll keys */
+    device_blink(1);
+
+    /* if peripheral unit */
+    if (!main_unit_g)
+    {
+        /* send keys over uart */
+        return false;
+    }
+
         /*
     USB_KeyboardReport_Data_t* KeyboardReport = (USB_KeyboardReport_Data_t*)ReportData;
         */
@@ -170,5 +195,7 @@ void CALLBACK_HID_Device_ProcessHIDReport(USB_ClassInfo_HID_Device_t* const HIDI
     const void* ReportData,
     const uint16_t ReportSize)
 {
+    /* skip if peripheral */
+    if (!main_unit_g) return false;
 }
 
