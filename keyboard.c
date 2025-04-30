@@ -94,8 +94,6 @@ void SetupHardware()
     device_init();
     uart_init();
     USB_Init();
-
-    device_blink(1);
 }
 
 /** Peripheral main loop */
@@ -104,7 +102,6 @@ void PeripheralTask()
     /* skip if not peripheral */
     if (main_unit_g) return;
 
-    device_blink(1);
     /* poll keyboard */
     /* send keypresses */
 }
@@ -165,18 +162,11 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
     if (!main_unit_g) return false;
 
     /* poll keys */
-    device_blink(1);
 
-    /* if peripheral unit */
-    if (!main_unit_g)
-    {
-        /* send keys over uart */
-        return false;
-    }
-
-        /*
-    USB_KeyboardReport_Data_t* KeyboardReport = (USB_KeyboardReport_Data_t*)ReportData;
-        */
+    /* create usb report */
+    /*
+        USB_KeyboardReport_Data_t* KeyboardReport = (USB_KeyboardReport_Data_t*)ReportData;
+    */
     *ReportSize = sizeof(USB_KeyboardReport_Data_t);
     return false;
 }
@@ -196,6 +186,6 @@ void CALLBACK_HID_Device_ProcessHIDReport(USB_ClassInfo_HID_Device_t* const HIDI
     const uint16_t ReportSize)
 {
     /* skip if peripheral */
-    if (!main_unit_g) return false;
+    if (!main_unit_g) return;
 }
 
