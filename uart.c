@@ -48,6 +48,10 @@ void uart_get_report(USB_NKRO_Report_Data_t *report)
     {
         report->Keys[i] |= report_g.Keys[i];
     }
+
+    /* clear report buffer */
+    report_g.Modifier = 0x00;
+    memset((uint8_t *)report_g.Keys, 0x00, KEY_BUFFER_SIZE);
 }
 
 
@@ -55,17 +59,13 @@ void uart_get_report(USB_NKRO_Report_Data_t *report)
 ISR(USART1_RX_vect)
 {
     /* if data is available */
-    if (UCSR1A & (1 << RXC1))
-    {
-        report_g.Modifier |= UDR1;
-    }
+    while (!(UCSR1A & (1 << RXC1)));
+    report_g.Modifier |= UDR1;
 
-    /* while data is available */
-    int i = 0;
-    while ((UCSR1A & (1 << RXC1)) && i < KEY_BUFFER_SIZE)
+    for (int i = 0; i < KEY_BUFFER_SIZE; i++)
     {
+        while (!(UCSR1A & (1 << RXC1)));
         report_g.Keys[i] |= UDR1;
-        i++;
     }
 }
 
