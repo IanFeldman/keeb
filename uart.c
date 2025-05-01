@@ -9,10 +9,12 @@ volatile USB_NKRO_Report_Data_t report_g;
 void uart_init(void)
 {
     /* ubrr = clock / (16 * baud) - 1 */
-    uint16_t ubrr = 103;
-    /* Set baud rate 9600 */
+    uint16_t ubrr = 8;
+    /* set baud rate 115200 */
     UBRR1H = (uint8_t)(ubrr >> 8);
     UBRR1L = (uint8_t)(ubrr);
+    /* enable double speed */
+    UCSR1A = (1 << U2X1);
     /* enable transmitter, receiver, receiver interrupts */
     UCSR1B = (1 << TXEN1 | 1 << RXEN1 | 1 << RXCIE1);
     /* no parity, one stop bits, 8-bit data */

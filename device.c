@@ -57,6 +57,7 @@ uint8_t device_poll(USB_NKRO_Report_Data_t *report)
     /* port c */
     /* port d */
     #elif RIGHT
+    if (!(port_b & (1 << 1))) report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_O)] |= SC_TO_MSK(HID_KEYBOARD_SC_O);
     #else
     #error LEFT or RIGHT not defined
     #endif
