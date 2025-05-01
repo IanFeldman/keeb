@@ -114,7 +114,6 @@ void PeripheralTask()
     if (input)
     {
         uart_send_report(KeyboardReport);
-        device_blink(1);
     }
 }
 
