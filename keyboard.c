@@ -105,7 +105,7 @@ void PeripheralTask()
     if (main_unit_g) return;
 
     /* create usb report */
-    USB_NKRO_Report_Data_t KeyboardReport;
+    USB_NKRO_Report_Data_t KeyboardReport = {0};
 
     /* poll keys */
     uint8_t input = device_poll(&KeyboardReport);
