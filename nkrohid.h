@@ -41,5 +41,7 @@ typedef struct
 /* Get key buffer byte mask from scancode */
 #define SC_TO_MSK(scancode) (0x01 << (scancode - (SC_TO_IDX(scancode) << 3)))
 
+#define HID_KEYBOARD_SC_LAYER 0x00
+
 #endif /* NKROHID_H */
 

@@ -6,6 +6,8 @@
 /* Only used by main unit */
 volatile USB_NKRO_Report_Data_t report_g;
 
+volatile int is_main_unit_g;
+
 /* Initialize uart peripheral */
 void uart_init(void)
 {
@@ -23,9 +25,10 @@ void uart_init(void)
     /* enable global interrupts */
     SREG |= (1 << SREG_I);
 
-    /* intialize report to zeros */
+    /* intialize globals */
     report_g.Modifier = 0x00;
     memset((uint8_t *)report_g.Keys, 0x00, KEY_BUFFER_SIZE);
+    is_main_unit_g = 0;
 }
 
 
@@ -66,7 +69,31 @@ void uart_get_report(USB_NKRO_Report_Data_t *report)
 }
 
 
-/* Main unit receive key state and save to global report buffer */
+/* Setter for is_main_unit_g */
+void uart_set_is_main_unit(int value)
+{
+    is_main_unit_g = value;
+}
+
+
+/* Main unit send layer key press */
+void uart_send_layer_info(USB_NKRO_Report_Data_t report)
+{
+    /* only send if layer key has been pressed */
+    uint8_t press = report.Keys[SC_TO_IDX(HID_KEYBOARD_SC_LAYER)]
+        & SC_TO_MSK(HID_KEYBOARD_SC_LAYER);
+
+    if (press)
+    {
+        /* send arbitrary data for now */
+        while (!(UCSR1A & (1 << UDRE1)));
+        UDR1 = FRAME_START;
+    }
+}
+
+
+/* Main unit receive key state and save to global report buffer
+ * Peripheral receive single byte indicating layer key press */
 ISR(USART1_RX_vect)
 {
     static interrupt_st state = AWAIT_REPORT;
@@ -75,6 +102,19 @@ ISR(USART1_RX_vect)
     /* get data */
     uint8_t data = UDR1;
 
+    /* if peripheral */
+    if (!is_main_unit_g)
+    {
+        /* TODO: activate layer key in report */
+        /*
+        This actives report_g, but device_poll looks at the passed in param
+        report_g.Keys[SC_TO_IDX(HID_KEYBOARD_SC_LAYER)] |=
+            SC_TO_MSK(HID_KEYBOARD_SC_LAYER);
+        */
+        return;
+    }
+
+    /* if main */
     switch(state)
     {
         case AWAIT_REPORT:

@@ -121,6 +121,7 @@ void PeripheralTask()
 void EVENT_USB_Device_Connect(void)
 {
     main_unit_g = 1;
+    uart_set_is_main_unit(main_unit_g);
     device_blink(2);
 }
 
@@ -128,6 +129,7 @@ void EVENT_USB_Device_Connect(void)
 void EVENT_USB_Device_Disconnect(void)
 {
     main_unit_g = 0;
+    uart_set_is_main_unit(main_unit_g);
     device_blink(3);
 }
 
@@ -176,10 +178,10 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
     USB_NKRO_Report_Data_t* KeyboardReport = (USB_NKRO_Report_Data_t*)ReportData;
 
     /* poll keys */
-    device_poll(KeyboardReport);
-
-    /* add queued keys */
+    /* get buffered keys first because it might contain layer info */
     uart_get_report(KeyboardReport);
+    device_poll(KeyboardReport);
+    uart_send_layer_info(*KeyboardReport);
 
     *ReportSize = sizeof(USB_NKRO_Report_Data_t);
     return false;
