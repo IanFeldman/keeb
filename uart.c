@@ -47,15 +47,19 @@ void uart_send_report(USB_NKRO_Report_Data_t report)
 /* Main unit send layer key press */
 void uart_send_layer_info(USB_NKRO_Report_Data_t report)
 {
-    /* only send if layer key has been pressed */
-    uint8_t press = report.Keys[SC_TO_IDX(HID_KEYBOARD_SC_LAYER)]
-        & SC_TO_MSK(HID_KEYBOARD_SC_LAYER);
+    /* only send if layer state has changed */
+    static int last_layer_state = 0;
 
-    if (press)
+    int curr_layer_state =
+        !!(report.Keys[SC_TO_IDX(HID_KEYBOARD_SC_LAYER)]
+        & SC_TO_MSK(HID_KEYBOARD_SC_LAYER));
+
+    if (curr_layer_state != last_layer_state)
     {
-        /* send arbitrary data for now */
         while (!(UCSR1A & (1 << UDRE1)));
-        UDR1 = FRAME_START;
+        UDR1 = curr_layer_state;
     }
+
+    last_layer_state = curr_layer_state;
 }
 

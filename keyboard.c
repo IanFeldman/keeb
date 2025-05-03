@@ -236,10 +236,10 @@ ISR(USART1_RX_vect)
     /* get data */
     uint8_t data = UDR1;
 
-    /* if peripheral, any receive indicates layer key */
+    /* if peripheral, first rx indicates layer key status */
     if (!main_unit_g)
     {
-        layer_key_press = 1;
+        layer_key_press = !!data;
         return;
     }
 
