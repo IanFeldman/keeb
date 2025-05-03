@@ -124,8 +124,6 @@ void PeripheralTask()
     {
         uart_send_report(KeyboardReport);
     }
-
-    layer_key_press = 0;
 }
 
 /** Event handler for the library USB Connection event. */
