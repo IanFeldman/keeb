@@ -39,7 +39,12 @@
 #include "nkrohid.h"
 #include "uart.h"
 
-int main_unit_g = 0;
+/* report buffer to store incoming keys from peripheral */
+volatile USB_NKRO_Report_Data_t report_buffer_g = {0};
+/* keep track if this is main or peripheral */
+volatile int main_unit_g = 0;
+/* peripheral log if layer key pressed by main */
+volatile int layer_key_press = 0;
 
 /** Buffer to hold the previously generated Keyboard HID report, for comparison purposes inside the HID class driver. */
 static uint8_t PrevKeyboardHIDReportBuffer[sizeof(USB_NKRO_Report_Data_t)];
@@ -107,6 +112,10 @@ void PeripheralTask()
     /* create usb report */
     USB_NKRO_Report_Data_t KeyboardReport = {0};
 
+    /* incorporate layer key */
+    KeyboardReport.Keys[SC_TO_IDX(HID_KEYBOARD_SC_LAYER)] |=
+        SC_TO_MSK(HID_KEYBOARD_SC_LAYER) * layer_key_press;
+
     /* poll keys */
     uint8_t input = device_poll(&KeyboardReport);
 
@@ -115,13 +124,14 @@ void PeripheralTask()
     {
         uart_send_report(KeyboardReport);
     }
+
+    layer_key_press = 0;
 }
 
 /** Event handler for the library USB Connection event. */
 void EVENT_USB_Device_Connect(void)
 {
     main_unit_g = 1;
-    uart_set_is_main_unit(main_unit_g);
     device_blink(2);
 }
 
@@ -129,7 +139,6 @@ void EVENT_USB_Device_Connect(void)
 void EVENT_USB_Device_Disconnect(void)
 {
     main_unit_g = 0;
-    uart_set_is_main_unit(main_unit_g);
     device_blink(3);
 }
 
@@ -179,8 +188,20 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
 
     /* poll keys */
     /* get buffered keys first because it might contain layer info */
-    uart_get_report(KeyboardReport);
+    KeyboardReport->Modifier |= report_buffer_g.Modifier;
+    for (int i = 0; i < KEY_BUFFER_SIZE; i++)
+    {
+        KeyboardReport->Keys[i] |= report_buffer_g.Keys[i];
+    }
+
+    /* clear buffer */
+    report_buffer_g.Modifier = 0x00;
+    memset((uint8_t*)report_buffer_g.Keys, 0x00, KEY_BUFFER_SIZE);
+
+    /* poll main device */
     device_poll(KeyboardReport);
+
+    /* send layer key */
     uart_send_layer_info(*KeyboardReport);
 
     *ReportSize = sizeof(USB_NKRO_Report_Data_t);
@@ -205,3 +226,45 @@ void CALLBACK_HID_Device_ProcessHIDReport(USB_ClassInfo_HID_Device_t* const HIDI
     if (!main_unit_g) return;
 }
 
+/* Main unit receive key state and save to global report buffer
+ * Peripheral receive single byte indicating layer key press */
+ISR(USART1_RX_vect)
+{
+    static interrupt_st state = AWAIT_REPORT;
+    static int key_idx = 0;
+
+    /* get data */
+    uint8_t data = UDR1;
+
+    /* if peripheral, any receive indicates layer key */
+    if (!main_unit_g)
+    {
+        layer_key_press = 1;
+        return;
+    }
+
+    /* if main */
+    switch(state)
+    {
+        case AWAIT_REPORT:
+            if (data == FRAME_START)
+            {
+                state = READ_MODIFIER;
+            }
+            break;
+        case READ_MODIFIER:
+            report_buffer_g.Modifier |= data;
+            state = READ_KEYS;
+            break;
+        case READ_KEYS:
+            report_buffer_g.Keys[key_idx++] |= data;
+            if (key_idx >= KEY_BUFFER_SIZE)
+            {
+                state = AWAIT_REPORT;
+                key_idx = 0;
+            }
+            break;
+        default:
+            break;
+    }
+}

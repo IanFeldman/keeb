@@ -48,12 +48,16 @@ uint8_t device_poll(USB_NKRO_Report_Data_t *report)
     uint8_t port_d = PIND;
     uint8_t input = port_b & (port_c | ~PORTC_INPUT) & (port_d | ~PORTD_INPUT);
 
+    /* layer logic for peripheral distinction between being received vs pressed */
+    int layer_received = 0;
+    int layer_pressed = 0;
+    layer_received = report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_LAYER)] & SC_TO_MSK(HID_KEYBOARD_SC_LAYER);
+
     #ifdef LEFT
-    /* first check if layer key pressed */
-    report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_LAYER)] |= SC_TO_MSK(HID_KEYBOARD_SC_LAYER) * !(port_c & (1 << 4));
-    int layer = report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_LAYER)] & SC_TO_MSK(HID_KEYBOARD_SC_LAYER);
-    /* seperate read required beacuse layer key can be set by uart isr */
-    if (!layer)
+    /* check if layer key pressed */
+    layer_pressed = !(port_c & (1 << 4));
+    report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_LAYER)] |= SC_TO_MSK(HID_KEYBOARD_SC_LAYER) * layer_pressed;
+    if (!layer_received && !layer_pressed)
     {
         /* port b */
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_X)] |= SC_TO_MSK(HID_KEYBOARD_SC_X) * !(port_b & (1 << 0));
@@ -80,11 +84,10 @@ uint8_t device_poll(USB_NKRO_Report_Data_t *report)
     }
 
     #elif RIGHT
-    /* first check if layer key pressed */
-    report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_LAYER)] |= SC_TO_MSK(HID_KEYBOARD_SC_LAYER) * !(port_c & (1 << 5));
-    int layer = report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_LAYER)] & SC_TO_MSK(HID_KEYBOARD_SC_LAYER);
-    /* seperate read required beacuse layer key can be set by uart isr */
-    if (!layer)
+    /* check if layer key pressed */
+    layer_pressed = !(port_c & (1 << 5));
+    report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_LAYER)] |= SC_TO_MSK(HID_KEYBOARD_SC_LAYER) * layer_pressed;
+    if (!layer_received && !layer_pressed)
     {
         /* port b */
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_L)] |= SC_TO_MSK(HID_KEYBOARD_SC_L) * !(port_b & (1 << 0));
@@ -110,10 +113,15 @@ uint8_t device_poll(USB_NKRO_Report_Data_t *report)
     {
     }
 
+    /* clear layer press for peripheral */
+    if (layer_received && !layer_pressed)
+    {
+        report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_LAYER)] &= ~SC_TO_MSK(HID_KEYBOARD_SC_LAYER);
+    }
+
     #else
     #error LEFT or RIGHT not defined
     #endif
-
     return ~input;
 }
 
