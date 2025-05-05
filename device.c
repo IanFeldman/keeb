@@ -58,14 +58,17 @@ uint8_t device_poll(USB_NKRO_Report_Data_t *report)
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_X)] |= SC_TO_MSK(HID_KEYBOARD_SC_X) * !(port_b & (1 << 0));
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_W)] |= SC_TO_MSK(HID_KEYBOARD_SC_W) * !(port_b & (1 << 1));
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_Q)] |= SC_TO_MSK(HID_KEYBOARD_SC_Q) * !(port_b & (1 << 2));
-        // report->Keys[SC_TO_IDX(HID_KEYBOARD_SC__)] |= SC_TO_MSK(HID_KEYBOARD_SC__) * !(port_b & (1 << 3)); /* ESC */
+        report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_ESCAPE)] |=
+            SC_TO_MSK(HID_KEYBOARD_SC_ESCAPE) * !(port_b & (1 << 3));
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_A)] |= SC_TO_MSK(HID_KEYBOARD_SC_A) * !(port_b & (1 << 4));
-        // report->Keys[SC_TO_IDX(HID_KEYBOARD_SC__)] |= SC_TO_MSK(HID_KEYBOARD_SC__) * !(port_b & (1 << 5)); /* TAB */
+        report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_TAB)] |=
+            SC_TO_MSK(HID_KEYBOARD_SC_TAB) * !(port_b & (1 << 5));
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_Z)] |= SC_TO_MSK(HID_KEYBOARD_SC_Z) * !(port_b & (1 << 6));
-        // report->Keys[SC_TO_IDX(HID_KEYBOARD_SC__)] |= SC_TO_MSK(HID_KEYBOARD_SC__) * !(port_b & (1 << 7)); /* SHIFT */
+        report->Modifier |= HID_KEYBOARD_MODIFIER_LEFTSHIFT * !(port_b & (1 << 7));
         /* port c */
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_V)] |= SC_TO_MSK(HID_KEYBOARD_SC_V) * !(port_c & (1 << 2));
-        report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_SPACE)] |= SC_TO_MSK(HID_KEYBOARD_SC_SPACE) * !(port_c & (1 << 5));
+        report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_SPACE)] |=
+            SC_TO_MSK(HID_KEYBOARD_SC_SPACE) * !(port_c & (1 << 5));
         /* port d */
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_F)] |= SC_TO_MSK(HID_KEYBOARD_SC_F) * !(port_d & (1 << 0));
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_R)] |= SC_TO_MSK(HID_KEYBOARD_SC_R) * !(port_d & (1 << 1));
@@ -88,20 +91,26 @@ uint8_t device_poll(USB_NKRO_Report_Data_t *report)
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_O)] |= SC_TO_MSK(HID_KEYBOARD_SC_O) * !(port_b & (1 << 1));
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_I)] |= SC_TO_MSK(HID_KEYBOARD_SC_I) * !(port_b & (1 << 2));
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_K)] |= SC_TO_MSK(HID_KEYBOARD_SC_K) * !(port_b & (1 << 3));
-        // report->Keys[SC_TO_IDX(HID_KEYBOARD_SC__)] |= SC_TO_MSK(HID_KEYBOARD_SC__) * !(port_b & (1 << 4)); /* COMMA */
+        report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_COMMA_AND_LESS_THAN_SIGN)] |=
+            SC_TO_MSK(HID_KEYBOARD_SC_COMMA_AND_LESS_THAN_SIGN) * !(port_b & (1 << 4));
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_U)] |= SC_TO_MSK(HID_KEYBOARD_SC_U) * !(port_b & (1 << 5));
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_J)] |= SC_TO_MSK(HID_KEYBOARD_SC_J) * !(port_b & (1 << 6));
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_M)] |= SC_TO_MSK(HID_KEYBOARD_SC_M) * !(port_b & (1 << 7));
         /* port c */
-        // report->Keys[SC_TO_IDX(HID_KEYBOARD_SC__)] |= SC_TO_MSK(HID_KEYBOARD_SC__) * !(port_c & (1 << 2)); /* FORWARD SLASH */
+        report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_SLASH_AND_QUESTION_MARK)] |=
+            SC_TO_MSK(HID_KEYBOARD_SC_SLASH_AND_QUESTION_MARK) * !(port_c & (1 << 2));
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_SPACE)] |= SC_TO_MSK(HID_KEYBOARD_SC_SPACE) * !(port_c & (1 << 4));
         /* port d */
-        // report->Keys[SC_TO_IDX(HID_KEYBOARD_SC__)] |= SC_TO_MSK(HID_KEYBOARD_SC__) * !(port_d & (1 << 0)); /* SHIFT */
-        // report->Keys[SC_TO_IDX(HID_KEYBOARD_SC__)] |= SC_TO_MSK(HID_KEYBOARD_SC__) * !(port_d & (1 << 1)); /* APOSTROPHE */
-        // report->Keys[SC_TO_IDX(HID_KEYBOARD_SC__)] |= SC_TO_MSK(HID_KEYBOARD_SC__) * !(port_d & (1 << 4)); /* TBD */
-        // report->Keys[SC_TO_IDX(HID_KEYBOARD_SC__)] |= SC_TO_MSK(HID_KEYBOARD_SC__) * !(port_d & (1 << 5)); /* SEMICOLON */
+        report->Modifier |= HID_KEYBOARD_MODIFIER_RIGHTSHIFT * !(port_d & (1 << 0));
+        report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_ENTER)] |=
+            SC_TO_MSK(HID_KEYBOARD_SC_ENTER) * !(port_d & (1 << 1));
+        report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_BACKSPACE)] |=
+            SC_TO_MSK(HID_KEYBOARD_SC_BACKSPACE) * !(port_d & (1 << 4));
+        report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_SEMICOLON_AND_COLON)] |=
+            SC_TO_MSK(HID_KEYBOARD_SC_SEMICOLON_AND_COLON) * !(port_d & (1 << 5));
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_P)] |= SC_TO_MSK(HID_KEYBOARD_SC_P) * !(port_d & (1 << 6));
-        // report->Keys[SC_TO_IDX(HID_KEYBOARD_SC__)] |= SC_TO_MSK(HID_KEYBOARD_SC__) * !(port_d & (1 << 7)); /* PERIOD */
+        report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_DOT_AND_GREATER_THAN_SIGN)] |=
+            SC_TO_MSK(HID_KEYBOARD_SC_DOT_AND_GREATER_THAN_SIGN) * !(port_d & (1 << 7));
     }
     else
     {
