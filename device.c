@@ -50,9 +50,8 @@ uint8_t device_poll(USB_NKRO_Report_Data_t *report)
 
     #ifdef LEFT
     /* first check if layer key pressed */
-    int layer_pressed = report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_LAYER)] |=
-        SC_TO_MSK(HID_KEYBOARD_SC_LAYER) * !(port_c & (1 << 4));
-    if (!layer_pressed)
+    report->Layer |= !(port_c & (1 << 4));
+    if (!report->Layer)
     {
         /* port b */
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_X)] |= SC_TO_MSK(HID_KEYBOARD_SC_X) * !(port_b & (1 << 0));
@@ -110,9 +109,8 @@ uint8_t device_poll(USB_NKRO_Report_Data_t *report)
     }
 
     #elif RIGHT
-    int layer_pressed = report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_LAYER)] |=
-        SC_TO_MSK(HID_KEYBOARD_SC_LAYER) * !(port_c & (1 << 5));
-    if (!layer_pressed)
+    report->Layer |= !(port_c & (1 << 5));
+    if (!report->Layer)
     {
         /* port b */
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_L)] |= SC_TO_MSK(HID_KEYBOARD_SC_L) * !(port_b & (1 << 0));

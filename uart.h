@@ -7,7 +7,8 @@ typedef enum
 {
     AWAIT_REPORT,
     READ_MODIFIER,
-    READ_KEYS
+    READ_KEYS,
+    READ_LAYER
 } interrupt_st;
 
 void uart_init(void);

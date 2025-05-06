@@ -34,14 +34,13 @@ typedef struct
 {
     uint8_t Modifier;
     uint8_t Keys[KEY_BUFFER_SIZE];
+    uint8_t Layer;
 } ATTR_PACKED USB_NKRO_Report_Data_t;
 
 /* Get key buffer byte index from scancode */
 #define SC_TO_IDX(scancode) (scancode >> 3)
 /* Get key buffer byte mask from scancode */
 #define SC_TO_MSK(scancode) (0x01 << (scancode - (SC_TO_IDX(scancode) << 3)))
-
-#define HID_KEYBOARD_SC_LAYER 0x00
 
 #endif /* NKROHID_H */
 

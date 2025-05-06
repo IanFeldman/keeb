@@ -113,8 +113,7 @@ void PeripheralTask()
     USB_NKRO_Report_Data_t KeyboardReport = {0};
 
     /* incorporate layer key */
-    KeyboardReport.Keys[SC_TO_IDX(HID_KEYBOARD_SC_LAYER)] |=
-        SC_TO_MSK(HID_KEYBOARD_SC_LAYER) * layer_key_press;
+    KeyboardReport.Layer = layer_key_press;
 
     /* poll keys */
     uint8_t input = device_poll(&KeyboardReport);
@@ -186,15 +185,9 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
 
     /* poll keys */
     /* get buffered keys first because it might contain layer info */
-    KeyboardReport->Modifier |= report_buffer_g.Modifier;
-    for (int i = 0; i < KEY_BUFFER_SIZE; i++)
-    {
-        KeyboardReport->Keys[i] |= report_buffer_g.Keys[i];
-    }
-
+    memcpy(KeyboardReport, (uint8_t *)&report_buffer_g, sizeof(USB_NKRO_Report_Data_t));
     /* clear buffer */
-    report_buffer_g.Modifier = 0x00;
-    memset((uint8_t*)report_buffer_g.Keys, 0x00, KEY_BUFFER_SIZE);
+    memset((uint8_t *)&report_buffer_g, 0x00, sizeof(USB_NKRO_Report_Data_t));
 
     /* poll main device */
     device_poll(KeyboardReport);
@@ -202,7 +195,8 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
     /* send layer key */
     uart_send_layer_info(*KeyboardReport);
 
-    *ReportSize = sizeof(USB_NKRO_Report_Data_t);
+    /* subtract one for layer byte */
+    *ReportSize = sizeof(USB_NKRO_Report_Data_t) - 1;
     return false;
 }
 
@@ -258,11 +252,16 @@ ISR(USART1_RX_vect)
             report_buffer_g.Keys[key_idx++] |= data;
             if (key_idx >= KEY_BUFFER_SIZE)
             {
-                state = AWAIT_REPORT;
+                state = READ_LAYER;
                 key_idx = 0;
             }
+            break;
+        case READ_LAYER:
+            report_buffer_g.Layer = !!data;
+            state = AWAIT_REPORT;
             break;
         default:
             break;
     }
 }
+
