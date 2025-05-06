@@ -121,7 +121,7 @@ void PeripheralTask()
     /* send keypresses */
     if (input)
     {
-        uart_send_report(KeyboardReport);
+        uart_send_report(&KeyboardReport);
     }
 }
 
@@ -193,7 +193,7 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
     device_poll(KeyboardReport);
 
     /* send layer key */
-    uart_send_layer_info(*KeyboardReport);
+    uart_send_layer_info(KeyboardReport);
 
     /* subtract one for layer byte */
     *ReportSize = sizeof(USB_NKRO_Report_Data_t) - 1;

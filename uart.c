@@ -23,7 +23,7 @@ void uart_init(void)
 
 
 /* Send a key press report from peripheral to main unit */
-void uart_send_report(USB_NKRO_Report_Data_t report)
+void uart_send_report(USB_NKRO_Report_Data_t *report)
 {
     /* send frame start */
     while (!(UCSR1A & (1 << UDRE1)));
@@ -31,7 +31,7 @@ void uart_send_report(USB_NKRO_Report_Data_t report)
 
     /* send modifier */
     while (!(UCSR1A & (1 << UDRE1)));
-    UDR1 = report.Modifier;
+    UDR1 = report->Modifier;
 
     /* send keys */
     for (int i = 0; i < KEY_BUFFER_SIZE; i++)
@@ -39,22 +39,22 @@ void uart_send_report(USB_NKRO_Report_Data_t report)
         /* wait for empty transmit buffer */
         while (!(UCSR1A & (1 << UDRE1)));
         /* put data in buffer */
-        UDR1 = report.Keys[i];
+        UDR1 = report->Keys[i];
     }
 
     /* send layer */
     while (!(UCSR1A & (1 << UDRE1)));
-    UDR1 = report.Layer;
+    UDR1 = report->Layer;
 }
 
 
 /* Main unit send layer key press */
-void uart_send_layer_info(USB_NKRO_Report_Data_t report)
+void uart_send_layer_info(USB_NKRO_Report_Data_t *report)
 {
     /* only send if layer state has changed */
     static int last_layer_state = 0;
 
-    int curr_layer_state = report.Layer;
+    int curr_layer_state = report->Layer;
 
     if (curr_layer_state != last_layer_state)
     {
