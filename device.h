@@ -20,6 +20,7 @@
 
 void device_init(void);
 void device_blink(int count);
+void device_enable_led(int on);
 uint8_t device_poll(USB_NKRO_Report_Data_t *report, uint8_t extern_layer_key);
 
 #endif /* DEVICE_H */

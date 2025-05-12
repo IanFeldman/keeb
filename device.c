@@ -38,6 +38,14 @@ void device_blink(int count)
     }
 }
 
+
+/* Enable debug led */
+void device_enable_led(int on)
+{
+    PORTC = on ? (PORTC | (1 << DEBUG_LED)) : (PORTC & ~(1 << DEBUG_LED));
+}
+
+
 /* Poll for keypresses, save to key report.
  * Extern_layer_key is input high when the other unit's layer key is pressed.
  * Return a value if any keys are pressed, 0 otherwise. */
@@ -197,6 +205,7 @@ uint8_t device_poll(USB_NKRO_Report_Data_t *report, uint8_t extern_layer_key)
     prev_port_c = port_c;
     prev_port_d = port_d;
     prev_layer = report->Layer || extern_layer_key;
+    device_enable_led(prev_layer);
     return input;
 }
 
