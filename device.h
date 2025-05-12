@@ -10,7 +10,7 @@
 
 void device_init(void);
 void device_blink(int count);
-uint8_t device_poll(USB_NKRO_Report_Data_t *report);
+uint8_t device_poll(USB_NKRO_Report_Data_t *report, uint8_t layer_key);
 
 #endif /* DEVICE_H */
 

@@ -44,7 +44,7 @@ volatile USB_NKRO_Report_Data_t report_buffer_g = {0};
 /* keep track if this is main or peripheral */
 volatile int main_unit_g = 0;
 /* peripheral log if layer key pressed by main */
-volatile int layer_key_press = 0;
+volatile int layer_key_press_g = 0;
 
 /** Buffer to hold the previously generated Keyboard HID report, for comparison purposes inside the HID class driver. */
 static uint8_t PrevKeyboardHIDReportBuffer[sizeof(USB_NKRO_Report_Data_t)];
@@ -112,11 +112,8 @@ void PeripheralTask()
     /* create usb report */
     USB_NKRO_Report_Data_t KeyboardReport = {0};
 
-    /* incorporate layer key */
-    KeyboardReport.Layer = layer_key_press;
-
     /* poll keys */
-    uint8_t input = device_poll(&KeyboardReport);
+    uint8_t input = device_poll(&KeyboardReport, layer_key_press_g);
 
     /* send keypresses */
     if (input)
@@ -190,7 +187,8 @@ bool CALLBACK_HID_Device_CreateHIDReport(USB_ClassInfo_HID_Device_t* const HIDIn
     memset((uint8_t *)&report_buffer_g, 0x00, sizeof(USB_NKRO_Report_Data_t));
 
     /* poll main device */
-    device_poll(KeyboardReport);
+    device_poll(KeyboardReport, layer_key_press_g);
+    layer_key_press_g = 0;
 
     /* send layer key */
     uart_send_layer_info(KeyboardReport);
@@ -231,7 +229,7 @@ ISR(USART1_RX_vect)
     /* if peripheral, first rx indicates layer key status */
     if (!main_unit_g)
     {
-        layer_key_press = !!data;
+        layer_key_press_g = !!data;
         return;
     }
 
@@ -257,7 +255,7 @@ ISR(USART1_RX_vect)
             }
             break;
         case READ_LAYER:
-            report_buffer_g.Layer = !!data;
+            layer_key_press_g = !!data;
             state = AWAIT_REPORT;
             break;
         default:

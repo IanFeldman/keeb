@@ -40,7 +40,7 @@ void device_blink(int count)
 
 /* Poll for keypresses, save to keys (array of KEY_BUFFER_SIZE).
  * Return a value if keys are pressed, 0 otherwise. */
-uint8_t device_poll(USB_NKRO_Report_Data_t *report)
+uint8_t device_poll(USB_NKRO_Report_Data_t *report, uint8_t layer_key)
 {
     /* read ports */
     uint8_t port_b = PINB;
@@ -51,7 +51,7 @@ uint8_t device_poll(USB_NKRO_Report_Data_t *report)
     #ifdef LEFT
     /* first check if layer key pressed */
     report->Layer |= !(port_c & (1 << 4));
-    if (!report->Layer)
+    if (!report->Layer && !layer_key)
     {
         /* port b */
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_X)] |= SC_TO_MSK(HID_KEYBOARD_SC_X) * !(port_b & (1 << 0));
@@ -110,7 +110,7 @@ uint8_t device_poll(USB_NKRO_Report_Data_t *report)
 
     #elif RIGHT
     report->Layer |= !(port_c & (1 << 5));
-    if (!report->Layer)
+    if (!report->Layer && !layer_key)
     {
         /* port b */
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_L)] |= SC_TO_MSK(HID_KEYBOARD_SC_L) * !(port_b & (1 << 0));
