@@ -38,20 +38,42 @@ void device_blink(int count)
     }
 }
 
-/* Poll for keypresses, save to keys (array of KEY_BUFFER_SIZE).
- * Return a value if keys are pressed, 0 otherwise. */
-uint8_t device_poll(USB_NKRO_Report_Data_t *report, uint8_t layer_key)
+/* Poll for keypresses, save to key report.
+ * Extern_layer_key is input high when the other unit's layer key is pressed.
+ * Return a value if any keys are pressed, 0 otherwise. */
+uint8_t device_poll(USB_NKRO_Report_Data_t *report, uint8_t extern_layer_key)
 {
+    /* used for edge case when layer key lifted and keys still depressed */
+    static uint8_t layer_hold = 0;
+    static uint8_t prev_layer = 0;
+    static uint8_t prev_port_b = 0;
+    static uint8_t prev_port_c = 0;
+    static uint8_t prev_port_d = 0;
+
     /* read ports */
     uint8_t port_b = PINB;
-    uint8_t port_c = PINC;
-    uint8_t port_d = PIND;
-    uint8_t input = port_b & (port_c | ~PORTC_INPUT) & (port_d | ~PORTD_INPUT);
+    uint8_t port_c = PINC | ~PORTC_INPUT;
+    uint8_t port_d = PIND | ~PORTD_INPUT;
+    uint8_t input = ~(port_b & port_c & port_d);
+    uint8_t input_static = (port_b == prev_port_b) &&
+                           (port_c == prev_port_c) &&
+                           (port_d == prev_port_d);
+    uint8_t input_static_sans_layer = (port_b == prev_port_b) &&
+                                      ((port_c & ~LAYER_POS) == (prev_port_c & ~LAYER_POS)) &&
+                                      (port_d == prev_port_d);
+
+    /* clear layer hold when any input changes */
+    layer_hold &= input_static;
+    /* check if layer key pressed */
+    report->Layer |= !(port_c & LAYER_POS);
+    uint8_t layer_active = report->Layer || extern_layer_key || layer_hold;
+    /* set layer hold */
+    layer_hold |= !layer_active && prev_layer && input_static_sans_layer;
+    /* re-evaluate layer_active */
+    layer_active = report->Layer || extern_layer_key || layer_hold;
 
     #ifdef LEFT
-    /* first check if layer key pressed */
-    report->Layer |= !(port_c & (1 << 4));
-    if (!report->Layer && !layer_key)
+    if (!layer_active)
     {
         /* port b */
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_X)] |= SC_TO_MSK(HID_KEYBOARD_SC_X) * !(port_b & (1 << 0));
@@ -109,8 +131,7 @@ uint8_t device_poll(USB_NKRO_Report_Data_t *report, uint8_t layer_key)
     }
 
     #elif RIGHT
-    report->Layer |= !(port_c & (1 << 5));
-    if (!report->Layer && !layer_key)
+    if (!layer_active)
     {
         /* port b */
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_L)] |= SC_TO_MSK(HID_KEYBOARD_SC_L) * !(port_b & (1 << 0));
@@ -167,12 +188,15 @@ uint8_t device_poll(USB_NKRO_Report_Data_t *report, uint8_t layer_key)
             SC_TO_MSK(HID_KEYBOARD_SC_APOSTROPHE_AND_QUOTE) * !(port_d & (1 << 5));
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_7_AND_AMPERSAND)] |=
             SC_TO_MSK(HID_KEYBOARD_SC_7_AND_AMPERSAND) * !(port_d & (1 << 6));
-        /* report->Modifier |= HID_KEYBOARD_MODIFIER_RIGHTALT * !(port_d & (1 << 7)); */
+        /* reserved key: port_d & (1 << 7) */
     }
-
-    #else
-    #error LEFT or RIGHT not defined
     #endif
-    return ~input;
+
+    /* set previous */
+    prev_port_b = port_b;
+    prev_port_c = port_c;
+    prev_port_d = port_d;
+    prev_layer = report->Layer || extern_layer_key;
+    return input;
 }
 
