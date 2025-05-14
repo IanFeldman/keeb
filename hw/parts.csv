@@ -1,0 +1,15 @@
+Identifier,Part Number,Link,Unit Quantity,Total Quantity,Description,,Identifier,Digikey Part Number,Unit Quantity,Total Quantity,Description
+U1,ATMEGA16U2-AU-ND,link,1,2,mcu,,U1,ATMEGA16U2-AU-ND,1,2,mcu
+Y1,XC1282CT-ND,link,1,2,crystal,,Y1,XC1282CT-ND,1,2,16Mhz crystal
+J1,2073-USB4105-GF-ACT-ND ,link,1,2,usbc connector,,J1,2073-USB4105-GF-ACT-ND ,1,2,usbc connector
+J2,CP-SJ2-3574A-SMT-CT-ND,link,1,2,trrs connector,,J2,CP-SJ2-3574A-SMT-CT-ND,1,2,trrs connector
+J3,WM20565CT-ND,link,1,2,pins,,J3,WM20565CT-ND,1,2,pins
+SW1,CKN12221-1-ND,link,1,2,push button,,SW1,CKN12221-1-ND,1,2,push button
+D1...D4,475-LSR976-NR-1CT-ND,link,4,8,leds,,"D1, D2, D3, D4",475-LSR976-NR-1CT-ND,4,8,leds
+"R1, R6",RMCF0805FT10K0CT-ND,link,2,4,10kohm,,"R1, R6, R7, R8, R9, R10",RMCF0805FT10K0CT-ND,6,12,10kohm
+"R2, R3",RMCF0805JT22R0CT-ND,link,2,4,22ohm,,"R2, R3",RMCF0805JT22R0CT-ND,2,4,22ohm
+"R4, R5",RMCF0805JT5K10CT-ND,link,2,4,5.1kohm,,"R4, R5",RMCF0805JT5K10CT-ND,2,4,5.1kohm
+R7...R10,RMCF0805JT220RCT-ND,link,4,8,220ohm,,"C1, C4, C5",311-1365-1-ND,3,6,1uf
+extra R7...R10,RMCF0805JT150RCT-ND,,,8,150ohm,,"C2, C3",311-3614-1-ND,2,4,20pf
+"C1, C4, C5",311-1365-1-ND,link,3,6,1uf,,,,,,
+"C2, C3",311-3614-1-ND,link,2,4,20pf,,,,,,

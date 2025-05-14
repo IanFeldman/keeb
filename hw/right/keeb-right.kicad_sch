@@ -3994,7 +3994,7 @@
 		)
 		(uuid "fff68cf3-53bb-4188-90c0-ac6834cec546")
 	)
-	(text "1"
+	(text "1.1"
 		(exclude_from_sim no)
 		(at 275.082 193.294 0)
 		(effects
@@ -4004,9 +4004,9 @@
 		)
 		(uuid "6185e330-59f2-43cb-b76b-9e8afc5d0940")
 	)
-	(text "Ergo-keyboard"
+	(text "Keeb"
 		(exclude_from_sim no)
-		(at 195.326 189.738 0)
+		(at 188.976 189.738 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -4014,7 +4014,7 @@
 		)
 		(uuid "7fdc61ee-65a1-4d72-9fee-6204e3474821")
 	)
-	(text "4/17/25"
+	(text "5/14/25"
 		(exclude_from_sim no)
 		(at 212.344 193.294 0)
 		(effects
@@ -6895,7 +6895,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "220"
+		(property "Value" "10k"
 			(at 100.33 163.8299 0)
 			(effects
 				(font
@@ -7343,7 +7343,7 @@
 				)
 			)
 		)
-		(property "Value" "220"
+		(property "Value" "10k"
 			(at 166.37 92.71 90)
 			(effects
 				(font
@@ -8019,7 +8019,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "220"
+		(property "Value" "10k"
 			(at 176.53 125.7299 0)
 			(effects
 				(font
@@ -9384,7 +9384,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "220"
+		(property "Value" "10k"
 			(at 187.96 125.7299 0)
 			(effects
 				(font
