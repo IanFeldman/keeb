@@ -1,10 +1,39 @@
 # A minimal ergo keyboard
-Low profile, split, ortholinear, 34-key layout staggered to my natural finger rest positions. Designed for Gateron KS-33 Reds.
-<img width="1860" alt="layout" src="https://github.com/user-attachments/assets/40da979a-4188-413d-81f6-b131c380d81c"/>
+Low profile, split, ortholinear, 34-key layout staggered to my natural finger rest positions. Designed for Gateron KS-33 Red swiches and DSA keycaps.
+<br>
+
+<img width="1860" alt="PCB design layout" src="https://github.com/user-attachments/assets/40da979a-4188-413d-81f6-b131c380d81c"/>
 
 ## Features
 - N-key rollover
 - Efficient matrixless polling
 - Lightweight and portable
-- Serial communciation between splits
+- Serial communication between splits
 - USB-C host connection
+
+## Hardware Build Instructions
+- Order and assemble PCB's
+  (reflow recommended for all surface mount components except SPI headers, TRRS jack, and crystal oscillator)
+- Configure programming setup using In-system programmer (ensure shared ground)
+- Power on PCB through USB-C connector
+<br><br> _Note: only one PCB can be flashed at a time_
+
+## Software Build and Flash Instructions (Linux)
+```sh
+# Install dependencies
+sudo apt install avr-gcc
+
+# Clone this repo
+git clone https://github.com/IanFeldman/keeb.git
+cd keeb
+
+# Compile left or right half
+make [left] [right]
+
+# Update makefile targets 'fuses' and 'flash' as needed for your ISP device
+# Set fuses with ISP (first time only)
+make fuses
+
+# Flash keyboard with ISP
+make flash
+```
