@@ -196,7 +196,7 @@ uint8_t device_poll(USB_NKRO_Report_Data_t *report, uint8_t extern_layer_key)
             SC_TO_MSK(HID_KEYBOARD_SC_APOSTROPHE_AND_QUOTE) * !(port_d & (1 << 5));
         report->Keys[SC_TO_IDX(HID_KEYBOARD_SC_7_AND_AMPERSAND)] |=
             SC_TO_MSK(HID_KEYBOARD_SC_7_AND_AMPERSAND) * !(port_d & (1 << 6));
-        /* reserved key: port_d & (1 << 7) */
+        report->Modifier |= HID_KEYBOARD_MODIFIER_RIGHTGUI * !(port_d & (1 << 7));
     }
     #endif
 
