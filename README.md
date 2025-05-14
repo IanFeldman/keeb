@@ -13,7 +13,8 @@ Low profile, split, ortholinear, 34-key layout staggered to my natural finger re
 
 ## Hardware Build Instructions
 - Order and assemble PCB's
-  (reflow recommended for all surface mount components except SPI headers, TRRS jack, and crystal oscillator)
+  - Reflow recommended for all surface mount components except SPI headers, TRRS jack, and crystal oscillator.
+  - On hardware version 1.1, there are duplicate C2 and C3 traces. Only solder one C2 and one C3.
 - Configure programming setup using In-system programmer (ensure shared ground)
 - Power on PCB through USB-C connector
 <br><br> _Note: only one PCB can be flashed at a time_
