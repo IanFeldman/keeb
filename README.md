@@ -1,8 +1,9 @@
 # A minimal ergo keyboard
 Low profile, split, ortholinear, 34-key layout staggered to my natural finger rest positions. Designed for Gateron KS-33 Red swiches and DSA keycaps.
-<br>
+See write-up at https://ianfeldman.dev/projects/keyboard/.
+<br><br>
 
-<img width="1860" alt="PCB design layout" src="https://github.com/user-attachments/assets/40da979a-4188-413d-81f6-b131c380d81c"/>
+<img width="1860" alt="Keyboard" src="https://github.com/user-attachments/assets/0d0769d0-1ac2-4d26-b064-92777ad31b67"/>
 
 ## Features
 - N-key rollover
