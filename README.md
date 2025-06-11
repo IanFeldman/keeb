@@ -23,7 +23,7 @@ See write-up at https://ianfeldman.dev/projects/keyboard/.
 ## Software Build and Flash Instructions (Linux)
 ```sh
 # Install dependencies
-sudo apt install avr-gcc
+sudo apt install gcc-avr avr-libc avrdude make
 
 # Clone this repo
 git clone https://github.com/IanFeldman/keeb.git
